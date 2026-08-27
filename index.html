@@ -8,7 +8,7 @@
     * { box-sizing: border-box; font-family: Tahoma, sans-serif; }
     body {
       background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -21,20 +21,25 @@
       border-radius: 20px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       text-align: center;
-      max-width: 380px;
+      max-width: 400px;
       width: 100%;
     }
     h2 { color: #d63384; margin-bottom: 20px; }
-    p { color: #444; margin-bottom: 10px; }
-    input {
+    p { color: #444; margin-bottom: 10px; font-size: 15px; }
+    input, textarea {
       width: 100%;
       padding: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       border: 2px solid #ffb6c1;
       border-radius: 10px;
       outline: none;
       text-align: center;
-      font-size: 15px;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      text-align: right;
     }
     .btn-group { display: flex; flex-direction: column; gap: 10px; }
     button {
@@ -48,47 +53,73 @@
       transition: background 0.2s, transform 0.1s;
     }
     button:hover { background: #ff4757; transform: scale(1.02); }
+    .btn-send { background: #2ed573; margin-top: 10px; }
+    .btn-send:hover { background: #26af5f; }
+    #noteStep { display: none; margin-top: 15px; }
     #result { margin-top: 20px; font-size: 17px; color: #2ed573; display: none; font-weight: bold; }
+    #angryMessage { margin-top: 20px; font-size: 18px; color: #ff4757; display: none; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <div class="card">
     <h2>❤️ یه سوال برای تو ❤️</h2>
-    <p>لطفاً اسمت رو وارد کن:</p>
-    <input type="text" id="nameInput" placeholder="اسمت اینجا..." />
     
-    <p>هنوز منو دوست داری؟ 🥹</p>
-    <div class="btn-group">
-      <button onclick="sendAnswer('آره ❤️')">آره ❤️</button>
-      <button onclick="sendAnswer('خیلی زیاد 🥰')">خیلی زیاد 🥰</button>
-      <button onclick="sendAnswer('نمی‌دونم 😐')">نمی‌دونم 😐</button>
-      <button onclick="sendAnswer('اصلاً 😭')">اصلاً 😭</button>
+    <div id="step1">
+      <p>لطفاً اسمت رو وارد کن:</p>
+      <input type="text" id="nameInput" placeholder="اسمت اینجا..." />
+      
+      <p>چقدر دوسم داری؟ 🥹</p>
+      <div class="btn-group">
+        <button onclick="selectOption('بی‌نهایت ♾️❤️')">بی‌نهایت ♾️❤️</button>
+        <button onclick="selectOption('ایکم کمتر از بی‌نهایت 🤏🥰')">ایکم کمتر از بی‌نهایت 🤏🥰</button>
+        <button onclick="showAngry()">دوست ندارم 💔</button>
+      </div>
     </div>
 
-    <div id="result">جوابت برام فرستاده شد! 💕</div>
+    <!-- مرحله ثبت متن دلخواه -->
+    <div id="noteStep">
+      <p>حالا که دوسم داری، یه متن برام بنویس که روت نمی‌شد شاید بهم بگی: 🫣💬</p>
+      <textarea id="customNote" placeholder="هرچی تو دلت هست بنویس..."></textarea>
+      <button class="btn-send" onclick="sendFinalData()">ارسال برای عشقم 💌</button>
+    </div>
+
+    <!-- پیام‌ها -->
+    <div id="angryMessage">قهرم اصلاً! 😤💔</div>
+    <div id="result">جوابت با عشق فرستاده شد! 💕</div>
   </div>
 
   <script>
-    async function sendAnswer(answer) {
+    let selectedAnswer = '';
+
+    function showAngry() {
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('angryMessage').style.display = 'block';
+    }
+
+    function selectOption(answer) {
+      selectedAnswer = answer;
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('noteStep').style.display = 'block';
+    }
+
+    async function sendFinalData() {
       const name = document.getElementById('nameInput').value || 'پارتنر عزیز';
+      const note = document.getElementById('customNote').value || 'متنی نوشته نشد!';
       
+      const combinedAnswer = `${selectedAnswer}\n\n📝 **متن دلی:**\n${note}`;
+
       try {
         const response = await fetch('/api/index.py', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name, answer: answer })
+          body: JSON.stringify({ name: name, answer: combinedAnswer })
         });
         
         if (response.ok) {
+          document.getElementById('noteStep').style.display = 'none';
           document.getElementById('result').style.display = 'block';
         } else {
           alert('خطایی رخ داد، دوباره تلاش کن!');
         }
       } catch (err) {
-        alert('خطا در ارتباط با سرور.');
-      }
-    }
-  </script>
-</body>
-</html>
