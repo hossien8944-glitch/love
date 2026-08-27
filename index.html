@@ -59,6 +59,13 @@
     .btn-send:hover { background: #26af5f; }
     #noteStep { display: none; margin-top: 15px; }
     #result { margin-top: 20px; font-size: 17px; color: #2ed573; display: none; font-weight: bold; }
+    #thinkMoreText {
+      margin-top: 15px;
+      font-size: 15px;
+      color: #ff4757;
+      font-weight: bold;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -73,6 +80,7 @@
         <button onclick="selectOption('یکم کمتر از بی‌نهایت 🤏🥰')">یکم کمتر از بی‌نهایت 🤏🥰</button>
         <button id="noBtn" onclick="shrinkNoBtn()">دوست ندارم 💔</button>
       </div>
+      <div id="thinkMoreText">بیشتر فکر کن! 🧐</div>
     </div>
 
     <!-- مرحله ثبت متن دلخواه -->
@@ -92,9 +100,10 @@
 
     function shrinkNoBtn() {
       const btn = document.getElementById('noBtn');
-      scale -= 0.25;
+      const text = document.getElementById('thinkMoreText');
       
-      btn.innerText = 'بیشتر فکر کن! 🧐';
+      text.style.display = 'block';
+      scale -= 0.25;
       
       if (scale <= 0.1) {
         btn.style.display = 'none';
@@ -124,13 +133,3 @@
         if (response.ok) {
           document.getElementById('noteStep').style.display = 'none';
           document.getElementById('result').style.display = 'block';
-        } else {
-          alert('خطایی رخ داد، دوباره تلاش کن!');
-        }
-      } catch (err) {
-        alert('خطا در ارتباط با سرور.');
-      }
-    }
-  </script>
-</body>
-</html>
