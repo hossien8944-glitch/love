@@ -25,24 +25,22 @@
       width: 100%;
     }
     h2 { color: #d63384; margin-bottom: 20px; }
-    p { color: #444; margin-bottom: 10px; font-size: 15px; }
-    input, textarea {
+    p { color: #444; margin-bottom: 15px; font-size: 16px; }
+    textarea {
       width: 100%;
       padding: 12px;
       margin-bottom: 15px;
       border: 2px solid #ffb6c1;
       border-radius: 10px;
       outline: none;
-      text-align: center;
+      resize: vertical;
+      min-height: 90px;
+      text-align: right;
       font-size: 14px;
     }
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-      text-align: right;
-    }
-    .btn-group { display: flex; flex-direction: column; gap: 10px; }
+    .btn-group { display: flex; flex-direction: column; gap: 10px; align-items: center; }
     button {
+      width: 100%;
       background: #ff6b81;
       color: white;
       border: none;
@@ -50,14 +48,17 @@
       border-radius: 10px;
       font-size: 16px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      transition: all 0.2s ease;
     }
-    button:hover { background: #ff4757; transform: scale(1.02); }
+    button:hover { background: #ff4757; }
+    #noBtn {
+      background: #a4b0be;
+    }
+    #noBtn:hover { background: #747d8c; }
     .btn-send { background: #2ed573; margin-top: 10px; }
     .btn-send:hover { background: #26af5f; }
     #noteStep { display: none; margin-top: 15px; }
     #result { margin-top: 20px; font-size: 17px; color: #2ed573; display: none; font-weight: bold; }
-    #angryMessage { margin-top: 20px; font-size: 18px; color: #ff4757; display: none; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -66,14 +67,11 @@
     <h2>❤️ یه سوال برای تو ❤️</h2>
     
     <div id="step1">
-      <p>لطفاً اسمت رو وارد کن:</p>
-      <input type="text" id="nameInput" placeholder="اسمت اینجا..." />
-      
       <p>چقدر دوسم داری؟ 🥹</p>
       <div class="btn-group">
         <button onclick="selectOption('بی‌نهایت ♾️❤️')">بی‌نهایت ♾️❤️</button>
         <button onclick="selectOption('یکم کمتر از بی‌نهایت 🤏🥰')">یکم کمتر از بی‌نهایت 🤏🥰</button>
-        <button onclick="showAngry()">دوست ندارم 💔</button>
+        <button id="noBtn" onclick="shrinkNoBtn()">دوست ندارم 💔</button>
       </div>
     </div>
 
@@ -84,17 +82,25 @@
       <button class="btn-send" onclick="sendFinalData()">ارسال برای عشقم 💌</button>
     </div>
 
-    <!-- پیام‌ها -->
-    <div id="angryMessage">قهرم اصلاً! 😤💔</div>
+    <!-- پیام موفقیت -->
     <div id="result">جوابت با عشق فرستاده شد! 💕</div>
   </div>
 
   <script>
     let selectedAnswer = '';
+    let scale = 1;
 
-    function showAngry() {
-      document.getElementById('step1').style.display = 'none';
-      document.getElementById('angryMessage').style.display = 'block';
+    function shrinkNoBtn() {
+      const btn = document.getElementById('noBtn');
+      scale -= 0.25;
+      
+      btn.innerText = 'بیشتر فکر کن! 🧐';
+      
+      if (scale <= 0.1) {
+        btn.style.display = 'none';
+      } else {
+        btn.style.transform = `scale(${scale})`;
+      }
     }
 
     function selectOption(answer) {
@@ -104,7 +110,6 @@
     }
 
     async function sendFinalData() {
-      const name = document.getElementById('nameInput').value || 'پارتنر عزیز';
       const note = document.getElementById('customNote').value || 'متنی نوشته نشد!';
       
       const combinedAnswer = `${selectedAnswer}\n\n📝 **متن دلی:**\n${note}`;
@@ -113,7 +118,7 @@
         const response = await fetch('/api/index.py', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name, answer: combinedAnswer })
+          body: JSON.stringify({ name: 'پارتنر عزیز', answer: combinedAnswer })
         });
         
         if (response.ok) {
@@ -123,3 +128,9 @@
           alert('خطایی رخ داد، دوباره تلاش کن!');
         }
       } catch (err) {
+        alert('خطا در ارتباط با سرور.');
+      }
+    }
+  </script>
+</body>
+</html>
