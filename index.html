@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>یه سوال مهم ❤️</title>
+  <style>
+    * { box-sizing: border-box; font-family: Tahoma, sans-serif; }
+    body {
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 380px;
+      width: 100%;
+    }
+    h2 { color: #d63384; margin-bottom: 20px; }
+    p { color: #444; margin-bottom: 10px; }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 2px solid #ffb6c1;
+      border-radius: 10px;
+      outline: none;
+      text-align: center;
+      font-size: 15px;
+    }
+    .btn-group { display: flex; flex-direction: column; gap: 10px; }
+    button {
+      background: #ff6b81;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover { background: #ff4757; transform: scale(1.02); }
+    #result { margin-top: 20px; font-size: 17px; color: #2ed573; display: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>❤️ یه سوال برای تو ❤️</h2>
+    <p>لطفاً اسمت رو وارد کن:</p>
+    <input type="text" id="nameInput" placeholder="اسمت اینجا..." />
+    
+    <p>هنوز منو دوست داری؟ 🥹</p>
+    <div class="btn-group">
+      <button onclick="sendAnswer('آره ❤️')">آره ❤️</button>
+      <button onclick="sendAnswer('خیلی زیاد 🥰')">خیلی زیاد 🥰</button>
+      <button onclick="sendAnswer('نمی‌دونم 😐')">نمی‌دونم 😐</button>
+      <button onclick="sendAnswer('اصلاً 😭')">اصلاً 😭</button>
+    </div>
+
+    <div id="result">جوابت برام فرستاده شد! 💕</div>
+  </div>
+
+  <script>
+    async function sendAnswer(answer) {
+      const name = document.getElementById('nameInput').value || 'پارتنر عزیز';
+      
+      try {
+        const response = await fetch('/api/index.py', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, answer: answer })
+        });
+        
+        if (response.ok) {
+          document.getElementById('result').style.display = 'block';
+        } else {
+          alert('خطایی رخ داد، دوباره تلاش کن!');
+        }
+      } catch (err) {
+        alert('خطا در ارتباط با سرور.');
+      }
+    }
+  </script>
+</body>
+</html>
